@@ -81,3 +81,40 @@ if [ "$UPDATE_THRESHOLDS" = "yes" ] || [ "$UPDATE_THRESHOLDS" = "y" ]; then
 else
     echo "Keeping default thresholds (Warning: 75%, Failure: 50%)."
 fi
+
+# Check if python3 is installed
+if python3 --version > /dev/null 2>&1; then
+    PYTHON_VERSION=$(python3 --version)
+    echo "Python3 is installed: $PYTHON_VERSION"
+else
+    echo "WARNING: python3 is not installed. The attendance checker will not run."
+fi
+
+# Verify that all required files and folders were created successfully
+echo "Verifying project structure..."
+STRUCTURE_OK=true
+
+check_path() {
+    if [ -e "$1" ]; then
+        echo "  OK: $1"
+    else
+        echo "  MISSING: $1"
+        STRUCTURE_OK=false
+    fi
+}
+
+check_path "$PROJECT_DIR/attendance_checker.py"
+check_path "$PROJECT_DIR/Helpers/assets.csv"
+check_path "$PROJECT_DIR/Helpers/config.json"
+check_path "$PROJECT_DIR/reports/reports.log"
+
+if [ "$STRUCTURE_OK" = true ]; then
+    echo "All files verified. Structure is correct."
+else
+    echo "Some files are missing. Please check the setup."
+fi
+
+echo ""
+echo "Setup complete! Project directory: $PROJECT_DIR"
+echo "To run: cd $PROJECT_DIR && python3 attendance_checker.py"
+
